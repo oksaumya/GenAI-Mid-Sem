@@ -1,13 +1,14 @@
-import pdfplumber
+import fitz
 from docx import Document
 import wikipedia
 
 def extract_text_from_pdf(file):
     text = ""
     try:
-        with pdfplumber.open(file) as pdf:
-            for page in pdf.pages:
-                extracted = page.extract_text()
+        pdf_bytes = file.read()
+        with fitz.open(stream=pdf_bytes, filetype="pdf") as pdf:
+            for page in pdf:
+                extracted = page.get_text()
                 if extracted:
                     text += extracted + "\n"
     except Exception as e:

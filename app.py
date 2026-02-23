@@ -64,7 +64,7 @@ if raw_text:
             keywords = extract_keywords_tfidf(cleaned_text, top_n=15)
             if keywords:
                 df_keywords = pd.DataFrame(keywords, columns=["Keyword", "TF-IDF Score"])
-                st.dataframe(df_keywords.style.background_gradient(cmap="Blues"), width="stretch")
+                st.dataframe(df_keywords.style.background_gradient(cmap="Blues"), use_container_width=True)
                 
                 st.bar_chart(df_keywords.set_index("Keyword"))
             else:
