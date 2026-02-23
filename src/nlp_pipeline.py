@@ -7,7 +7,6 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.text_rank import TextRankSummarizer
 import nltk
 
-# Initialize spacy model
 try:
     nlp = spacy.load("en_core_web_sm")
 except OSError:
@@ -16,17 +15,12 @@ except OSError:
     nlp = spacy.load("en_core_web_sm")
 
 def clean_text(text):
-    """Basic text cleaning."""
-    text = re.sub(r'\s+', ' ', text) # Remove extra whitespace
-    text = re.sub(r'\[[0-9]*\]', ' ', text) # Remove wiki citations
+    text = re.sub(r'\s+', ' ', text) 
+    text = re.sub(r'\[[0-9]*\]', ' ', text) 
     return text.strip()
 
 def preprocess_text(text):
-    """
-    Tokenization, Stop-word removal, Lemmatization using spaCy.
-    Returns a cleaned string ready for TF-IDF.
-    """
-    # Use spacy for processing, limited size to avoid memory issues for very large docs
+
     if len(text) > 1000000:
         text = text[:1000000]
     
@@ -39,12 +33,10 @@ def preprocess_text(text):
     return " ".join(tokens)
 
 def extract_keywords_tfidf(text, top_n=10):
-    """Extract top keywords using TF-IDF."""
     preprocessed = preprocess_text(text)
     if not preprocessed.strip():
         return []
     
-    # Needs a list of documents, we treat each sentence as a document
     doc = nlp(text)
     sentences = [sent.text for sent in doc.sents]
     cleaned_sentences = [preprocess_text(s) for s in sentences if s.strip()]
@@ -57,22 +49,20 @@ def extract_keywords_tfidf(text, top_n=10):
         tfidf_matrix = vectorizer.fit_transform(cleaned_sentences)
         feature_names = vectorizer.get_feature_names_out()
         
-        # Sum tfidf scores across all sentences
         sum_scores = tfidf_matrix.sum(axis=0)
         scores = [(word, sum_scores[0, idx]) for word, idx in vectorizer.vocabulary_.items()]
         scores = sorted(scores, key=lambda x: x[1], reverse=True)
         return scores[:top_n]
     except ValueError:
-        return [] # Can happen if vocabulary is empty
+        return [] 
 
 def perform_topic_modeling(text, n_topics=3, n_words=5):
-    """Topic modeling using LDA."""
     doc = nlp(text)
     sentences = [sent.text for sent in doc.sents]
     cleaned_sentences = [preprocess_text(s) for s in sentences if len(s.split()) > 3]
     
     if len(cleaned_sentences) < n_topics:
-        return [] # Need more sentences for topic modeling
+        return []
 
     vectorizer = TfidfVectorizer(max_df=0.9, min_df=2, stop_words='english')
     try:
@@ -91,9 +81,8 @@ def perform_topic_modeling(text, n_topics=3, n_words=5):
         return []
 
 def generate_extractive_summary(text, sentences_count=5):
-    """Generate summary using TextRank (from sumy)."""
     if len(text.split()) < 50:
-        return text # Too short to summarize
+        return text
 
     try:
         parser = PlaintextParser.from_string(text, Tokenizer("english"))

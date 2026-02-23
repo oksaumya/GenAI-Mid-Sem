@@ -8,7 +8,6 @@ st.set_page_config(page_title="NLP Research Analysis System", layout="wide")
 st.title("NLP Research Analysis System (Milestone 1)")
 st.markdown("Analyze documents or search topics to extract themes, keywords, and structured summaries using traditional NLP.")
 
-# Sidebar for Input
 st.sidebar.header("Input Section")
 input_method = st.sidebar.radio("Choose Input Method", ["Upload Document(s)", "Search Topic (Wikipedia)"])
 
@@ -44,11 +43,9 @@ elif input_method == "Search Topic (Wikipedia)":
 if raw_text:
     st.success(f"Successfully loaded content. Source: {source_info}")
     
-    # 1. Cleaning
     with st.spinner("Cleaning text data..."):
         cleaned_text = clean_text(raw_text)
     
-    # Layout and tabs for analysis
     tab1, tab2, tab3, tab4 = st.tabs(["Extractive Summary", "Keywords (TF-IDF)", "Topic Modeling (LDA)", "Raw Text Preview"])
     
     with tab1:
@@ -69,7 +66,6 @@ if raw_text:
                 df_keywords = pd.DataFrame(keywords, columns=["Keyword", "TF-IDF Score"])
                 st.dataframe(df_keywords.style.background_gradient(cmap="Blues"), width="stretch")
                 
-                # Plot
                 st.bar_chart(df_keywords.set_index("Keyword"))
             else:
                 st.warning("Failed to extract keywords. Text might be too short.")
@@ -90,4 +86,4 @@ if raw_text:
         st.text_area("Snippet of original content:", value=raw_text[:2000] + "...\n\n[TRUNCATED]", height=300, disabled=True)
 
 else:
-    st.info("👈 Please select an input method and provide data from the sidebar to begin analysis.")
+    st.info("Please select an input method and provide data from the sidebar to begin analysis.")
