@@ -7,12 +7,10 @@ from sumy.nlp.tokenizers import Tokenizer
 from sumy.summarizers.text_rank import TextRankSummarizer
 import nltk
 
-try:
-    nlp = spacy.load("en_core_web_sm")
-except OSError:
-    import spacy.cli
-    spacy.cli.download("en_core_web_sm")
-    nlp = spacy.load("en_core_web_sm")
+nltk.download('punkt', quiet=True)
+nltk.download('punkt_tab', quiet=True)
+
+nlp = spacy.load("en_core_web_sm")
 
 def clean_text(text):
     text = re.sub(r'\s+', ' ', text) 
